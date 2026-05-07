@@ -5,10 +5,27 @@ import '../../providers/trip_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/custom_card.dart';
 
+import '../../providers/expense_provider.dart';
+import '../../providers/itinerary_provider.dart';
 import '../../services/auth_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<TripProvider>(context, listen: false).loadTrips();
+      Provider.of<ExpenseProvider>(context, listen: false).loadExpenses();
+      Provider.of<ItineraryProvider>(context, listen: false).loadItineraries();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

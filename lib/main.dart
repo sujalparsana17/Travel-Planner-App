@@ -12,8 +12,16 @@ import 'screens/home/home_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'firebase_options.dart';
 
+import 'package:hive_flutter/hive_flutter.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await Hive.initFlutter();
+  await Hive.openBox('tripsBox');
+  await Hive.openBox('expensesBox');
+  await Hive.openBox('itinerariesBox');
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,

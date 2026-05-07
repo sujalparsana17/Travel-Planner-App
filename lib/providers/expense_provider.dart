@@ -1,10 +1,35 @@
 import 'package:flutter/foundation.dart';
 import '../models/expense.dart';
 import '../models/participant.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../services/firebase_service.dart';
 import 'dart:math';
 
 class ExpenseProvider with ChangeNotifier {
-  final List<Expense> _expenses = [];
+  List<Expense> _expenses = [];
+  final FirebaseService _firebaseService = FirebaseService();
+
+  Future<void> loadExpenses() async {
+    final box = Hive.box('expensesBox');
+    if (box.isNotEmpty) {
+      _expenses = box.values.map((e) => Expense.fromMap(e as Map)).toList();
+      notifyListeners();
+    }
+
+    try {
+      final cloudData = await _firebaseService.fetchExpenses();
+      if (cloudData.isNotEmpty) {
+        _expenses = cloudData;
+        await box.clear();
+        for (var item in _expenses) {
+          await box.put(item.id, item.toMap());
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Offline mode active: $e");
+    }
+  }
 
   List<Expense> get expenses => _expenses;
 
@@ -73,13 +98,26 @@ class ExpenseProvider with ChangeNotifier {
     return settlements;
   }
 
-  void addExpense(Expense expense) {
+  Future<void> addExpense(Expense expense) async {
     _expenses.add(expense);
     notifyListeners();
+
+    final box = Hive.box('expensesBox');
+    await box.put(expense.id, expense.toMap());
+
+    try {
+      await _firebaseService.uploadExpense(expense);
+    } catch (e) {
+      debugPrint("Saved locally, sync failed: $e");
+      throw Exception("offline");
+    }
   }
 
-  void removeExpense(String id) {
+  Future<void> removeExpense(String id) async {
     _expenses.removeWhere((expense) => expense.id == id);
     notifyListeners();
+
+    final box = Hive.box('expensesBox');
+    await box.delete(id);
   }
 }

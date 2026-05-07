@@ -41,7 +41,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     }
   }
 
-  void _saveTrip() {
+  Future<void> _saveTrip() async {
     if (_formKey.currentState!.validate()) {
       if (_startDate == null || _endDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -72,12 +72,22 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
         participants: participants,
       );
 
-      Provider.of<TripProvider>(context, listen: false).addTrip(newTrip);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Trip Saved Successfully!')),
-      );
-      Navigator.pop(context);
+      try {
+        await Provider.of<TripProvider>(context, listen: false).addTrip(newTrip);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Data synced successfully'), backgroundColor: Colors.green),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Offline mode active. Saved locally.'), backgroundColor: Colors.orange),
+          );
+        }
+      }
+      
+      if (mounted) Navigator.pop(context);
     }
   }
 

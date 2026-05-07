@@ -36,7 +36,7 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
     }
   }
 
-  void _addExpense() {
+  Future<void> _addExpense() async {
     if (_formKey.currentState!.validate()) {
       final amount = double.tryParse(_amountController.text);
       if (amount == null || amount <= 0) {
@@ -70,12 +70,21 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
         date: _expenseDate!,
       );
 
-      Provider.of<ExpenseProvider>(context, listen: false).addExpense(expense);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Expense Added Successfully!')),
-      );
-      Navigator.pop(context);
+      try {
+        await Provider.of<ExpenseProvider>(context, listen: false).addExpense(expense);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Expense Synced to Cloud Successfully!'), backgroundColor: Colors.green),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Offline mode active. Expense saved locally.'), backgroundColor: Colors.orange),
+          );
+        }
+      }
+      if (mounted) Navigator.pop(context);
     }
   }
 
