@@ -6,7 +6,12 @@ import '../screens/expense/expense_entry_screen.dart';
 import '../screens/dashboard/dashboard_screen.dart';
 import '../screens/search/search_screen.dart';
 
+import '../screens/auth/login_screen.dart';
+import '../screens/auth/signup_screen.dart';
+
 class AppRoutes {
+  static const String login = '/login';
+  static const String signup = '/signup';
   static const String home = '/';
   static const String createTrip = '/create-trip';
   static const String itinerary = '/itinerary';
@@ -16,6 +21,10 @@ class AppRoutes {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case login:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case signup:
+        return MaterialPageRoute(builder: (_) => const SignupScreen());
       case home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case createTrip:

@@ -5,6 +5,8 @@ import '../../providers/trip_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/custom_card.dart';
 
+import '../../services/auth_service.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -24,6 +26,15 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.search),
             onPressed: () {
               Navigator.pushNamed(context, AppRoutes.search);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await Provider.of<AuthService>(context, listen: false).signOut();
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+              }
             },
           ),
         ],

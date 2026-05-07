@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "219987698568",
+    "project_id": "travel-planner-app-cee58",
+    "storage_bucket": "travel-planner-app-cee58.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219987698568:android:1db2d9e01996f586bc103d",
+        "android_client_info": {
+          "package_name": "com.example.smart_travel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDnCsVJ4EbgQDh2_ZNpwCPUXKtqiaBzSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
