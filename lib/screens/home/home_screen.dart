@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
                   Icon(Icons.card_travel, size: 64, color: Colors.grey.shade400),
                   const SizedBox(height: 16),
                   Text(
-                    'No trips planned yet.',
+                    'No trips created yet',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 8),

@@ -23,21 +23,14 @@ class DashboardScreen extends StatelessWidget {
         }
 
         final expenses = expenseProvider.getExpensesByTrip(currentTrip.id);
-        final totalExpenses = expenses.fold(0.0, (sum, e) => sum + e.amount);
+        final totalExpenses = expenseProvider.getTotalExpense(currentTrip.id);
         final participantCount = currentTrip.participants.length;
-        final share = participantCount > 0 ? totalExpenses / participantCount : 0.0;
+        
+        final settlements = expenseProvider.calculateBalances(currentTrip.id, currentTrip.participants);
 
-        final Map<String, double> balances = {};
-        final Map<String, String> names = {};
+        final Map<String, String> participantNames = {};
         for (var p in currentTrip.participants) {
-          balances[p.id] = -share;
-          names[p.id] = p.name;
-        }
-
-        for (var e in expenses) {
-          if (balances.containsKey(e.paidBy)) {
-            balances[e.paidBy] = balances[e.paidBy]! + e.amount;
-          }
+          participantNames[p.id] = p.name;
         }
 
         return Scaffold(
@@ -84,33 +77,23 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 CustomCard(
-                  child: balances.isEmpty
-                      ? const Text('No participants.')
+                  child: settlements.isEmpty
+                      ? const Text('All balances are settled up!')
                       : Column(
-                          children: balances.entries.map((entry) {
-                            final name = names[entry.key] ?? 'Unknown';
-                            final balance = entry.value;
-                            String text;
-                            Color color;
-                            if (balance > 0.01) {
-                              text = '$name gets back \$${balance.toStringAsFixed(2)}';
-                              color = Colors.green;
-                            } else if (balance < -0.01) {
-                              text = '$name owes \$${(-balance).toStringAsFixed(2)}';
-                              color = Colors.red;
-                            } else {
-                              text = '$name is settled up';
-                              color = Colors.grey;
-                            }
+                          children: settlements.map((text) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(name, style: Theme.of(context).textTheme.bodyLarge),
-                                  Text(
-                                    text,
-                                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                                  const Icon(Icons.payment, size: 16, color: Colors.orange),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      text,
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -133,7 +116,7 @@ class DashboardScreen extends StatelessWidget {
                     itemCount: expenses.length,
                     itemBuilder: (context, index) {
                       final exp = expenses[index];
-                      final payerName = names[exp.paidBy] ?? 'Unknown';
+                      final payerName = participantNames[exp.paidBy] ?? 'Unknown';
                       return Card(
                         margin: const EdgeInsets.only(bottom: 8.0),
                         child: ListTile(
@@ -148,6 +131,7 @@ class DashboardScreen extends StatelessWidget {
                       );
                     },
                   ),
+                const SizedBox(height: 80),
               ],
             ),
           ),

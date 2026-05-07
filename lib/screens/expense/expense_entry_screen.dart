@@ -27,7 +27,7 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(2101),
     );
     if (picked != null) {
       setState(() {
